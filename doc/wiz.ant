@@ -1,0 +1,77 @@
+ant -buildfile test.xml -Dbuild=build/classes dist
+
+runs Ant using the test.xml file in the current directory, on the target called dist, setting the build property to the value build/classes.
+
+
+ant -lib /home/ant/extras
+
+runs Ant picking up additional task and support jars from the /home/ant/extras location
+
+
+ant -Daction=run
+
+runs Ant, executing the "run" target
+
+
+<javac srcdir="${src.dir}"
+           destdir="${build.classes}"
+           classpath="${classpath}"
+           debug="on"
+           deprecation="off"
+           optimize="on" >
+      <include name="**/*.java"/>
+      <exclude name="**/Script.java" unless="bsf.present" />
+      <exclude name="**/version.txt" />
+    </javac>
+
+You can use the include/exclude entities inside the javac task to include/exclude files matching the pattern in the name attribute from the compilation. From the above example, you want to include files contained in any directory ending in .java but, at the same time, you want to exclude files named Script.java unless a property bsf.present is set to true. 
+
+
+
+ Generating javadoc
+Another task that Ant can help automate is the generation of javadoc. You can use the following command to generate the javadoc:
+
+
+    <javadoc packagenames="${packages}"
+             sourcepath="${basedir}/${src.dir}"
+             destdir="${build.javadocs}"
+             author="true"
+             version="true"
+             windowtitle="${Name} API"
+             doctitle="${Name}"
+             bottom="Copyright © 2000 GroupServe. All Rights Reserved."
+    />
+
+The packages specify the overall packages that the javadoc will include. The sourcepath attribute points towards the location of the source files. The javadoc command also provides attributes allowing you to specify the title of the window and the document. You can also include a copyright notice at the bottom of each javadoc page, using the bottom attribute.
+
+
+To make sure source/debug information is generated into your class files, make sure you compile the the line
+
+ <!-- Compile the java code -->
+ <javac srcdir="${src}" destdir="${build}" debug="on" debuglevel="lines,vars,source" />
+
+in your build.xml file ... By default, ant builds without debug information
+
+Some example tasks
+
+       	<property name="src" value="src"/>
+
+        <delete dir="${src}/com"/>
+
+        <delete file="${war}/${jarname}"/>  
+
+        <mkdir dir="${src}/com"/>
+
+        <javac srcdir="${src}" destdir="${build}" debug="${debug}" debuglevel="lines,vars,source" />
+
+        <copy todir="${deploy}/" >
+            <fileset dir="${web}"/>
+        </copy>
+
+        <copy todir="${tomcat_dir}" >
+            <fileset file="${war}/${jarname}"/>
+        </copy>
+
+        <jar jarfile="${war}/${jarname}" basedir="${deploy}/"/>
+
+
