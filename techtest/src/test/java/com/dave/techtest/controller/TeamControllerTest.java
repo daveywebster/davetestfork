@@ -2,52 +2,48 @@ package com.dave.techtest.controller;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import com.dave.techtest.model.SPORT;
 import com.dave.techtest.model.Team;
-import com.dave.techtest.repository.TeamRepository;
-import com.dave.techtest.repository.TeamRepositoryImpl;
-import com.dave.techtest.service.TeamService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@RunWith(SpringRunner.class)
-@WebMvcTest(TeamController.class)
-public class TeamControllerTest {
-    @Autowired
-    private MockMvc mvc;
+//@RunWith(SpringRunner.class)
+// @WebMvcTest(TeamController.class)
+// @AutoConfigureMockMvc
+// @SpringBootTest
+public class TeamControllerTest extends AbstractTest {
 
-    @MockBean
-    private TeamService service;
+    // @Autowired
+    // private MockMvc mvc;
 
-    @MockBean
-    TeamRepository repository;
+
+    // private MockMvc mvc =
+    // MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+
+    // @MockBean
+    // private TeamService service;
+
+    // @MockBean
+    // private TeamRepository repository;
+
+    @Override
+    @Before
+    public void setUp() {
+        super.setUp();
+    }
 
     @Test
-    public void testShouldFindAllTeamsWhenNoSearchParametersPassed() throws Exception {
+    public void testReturnAllTeams() throws Exception {
 
-        // given
-        Team t1 = new Team();
-        Team t2 = new Team();
-        Team t3 = new Team();
-
-        List<Team> teams = new ArrayList<Team>();
-        Collections.addAll(teams, t1, t2, t3);
-
-        Mockito.when(service.getTeams()).thenReturn(TeamRepositoryImpl.teams);
+        // given - loading the whole app context and actually executing all
+        // code!
+        // Mockito.when(service.getTeams()).thenReturn(TeamRepositoryImpl.teams);
+        // Mockito.when(repository.getTeams()).thenReturn(TeamRepositoryImpl.teams);
 
         // when
         MvcResult mvcResult = mvc
@@ -67,4 +63,24 @@ public class TeamControllerTest {
 
         assertEquals(4, team_arr.length);
     }
+
+    @Test
+    public void testAddsNewTeam() throws Exception {
+        String uri = "/teams";
+        Team team = new Team();
+        team.setId("502");
+        team.setName("Yankees");
+        team.setSport(SPORT.BASEBALL);
+        team.setLeague("NBL");
+        String inputJson = super.mapToJson(team);
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri).contentType(MediaType.APPLICATION_JSON_VALUE).content(inputJson))
+                .andReturn();
+
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(201, status);
+        String content = mvcResult.getResponse().getContentAsString();
+        System.out.println(content);
+    }
+
 }
