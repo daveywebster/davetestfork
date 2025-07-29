@@ -1,2 +1,2 @@
-# davetest
-Just a test repository
+# davetestfork
+Just a test repository for testing forks
